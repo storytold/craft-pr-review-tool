@@ -1,0 +1,25 @@
+// Type-checks the UI and its tests. Sources import each other as `./x.ts`, so
+// `node --test` runs them directly (type stripping) and tsc rewrites the
+// imports to `./x.js` when building; `erasableSyntaxOnly` keeps to syntax
+// Node can strip. tsconfig.build.json emits the browser code to ui/build/.
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "types": ["node"],
+    "strict": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "rewriteRelativeImportExtensions": true,
+    "allowJs": false,
+    "skipLibCheck": true,
+    "rootDir": "ui/src",
+    "noEmit": true
+  },
+  "include": ["ui/src"]
+}

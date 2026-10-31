@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Craft PR Review</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <header data-tauri-drag-region>
+      <div class="brand" data-tauri-drag-region>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="4" cy="3.5" r="1.6"/><circle cx="4" cy="12.5" r="1.6"/><circle cx="12" cy="12.5" r="1.6"/><path d="M4 5v6M12 11V6.5C12 5 11 4 9.5 4H8M9.5 2 7.5 4l2 2"/></svg>
+        <span data-tauri-drag-region>PR Review</span>
+      </div>
+      <nav class="views" role="tablist">
+        <button class="view" data-view="apps" role="tab">Apps <span class="badge" id="apps-count"></span></button>
+        <button class="view" data-view="queue" role="tab">Review queue <span class="badge good" id="queue-count"></span></button>
+      </nav>
+      <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+      <div class="status" data-tauri-drag-region>
+        <span id="fresh-pill" class="pill"></span>
+      </div>
+      <div class="actions">
+        <button class="icon-button" id="refresh" title="Refresh now (⌘R)">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2v3h-3"/></svg>
+        </button>
+        <button class="icon-button" id="pin" title="Always on top">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2h4l-.5 4 2.5 2.5H4L6.5 6zM8 8.5V14"/></svg>
+        </button>
+        <button class="icon-button" id="hide" title="Hide (Esc)">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+        </button>
+      </div>
+    </header>
+    <div class="banner" id="banner" hidden></div>
+    <main id="main"></main>
+    <footer data-tauri-drag-region>
+      <span id="activity" data-tauri-drag-region></span>
+      <span id="backlog" data-tauri-drag-region></span>
+      <span id="budget" data-tauri-drag-region></span>
+      <span id="claude" data-tauri-drag-region></span>
+      <span class="spacer" data-tauri-drag-region></span>
+      <button class="footer-link" id="edit-config">Edit config</button>
+      <span id="shortcut"></span>
+    </footer>
+    <div id="resize" title="Resize"></div>
+  </div>
+  <!-- Compiled from ui/src/ by `npm run build` (run by the app's build.rs). -->
+  <script type="module" src="build/report.js"></script>
+  <script type="module" src="build/main.js"></script>
+</body>
+</html>

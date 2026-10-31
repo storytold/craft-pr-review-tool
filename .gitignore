@@ -1,1 +1,11 @@
 *~
+/target
+**/gen/schemas
+*.log
+.DS_Store
+node_modules/
+ui/build/
+ui/dev-data.json
+
+# Local configs that may hold a token
+.craft_pr_review_config.toml

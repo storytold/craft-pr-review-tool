@@ -1,0 +1,68 @@
+# Convenience targets. Tauri CLI resolves the project from crates/craft-pr-review.
+APP_DIR    := crates/craft-pr-review
+APP_NAME   := Craft PR Review
+BUNDLE     := target/release/bundle/macos/$(APP_NAME).app
+INSTALLED  := /Applications/$(APP_NAME).app
+AGENT_ID   := ai.storyteller.craft-pr-review
+AGENT      := $(HOME)/Library/LaunchAgents/$(AGENT_ID).plist
+
+.PHONY: dev run build bundle install uninstall test check ui dump preview icons clean
+
+dev: node_modules ## tauri dev, recompiling ui/src/ on change (live-reloads ui/)
+	npm run --silent watch & trap 'kill $$!' EXIT; cd $(APP_DIR) && cargo tauri dev
+
+run: node_modules ## fast debug binary, no bundling
+	cargo run -p craft-pr-review
+
+build: node_modules ## release build + every installer for this OS
+	cd $(APP_DIR) && cargo tauri build
+
+bundle: node_modules ## release .app only (macOS)
+	cd $(APP_DIR) && cargo tauri build --bundles app
+
+install: bundle ## copy to /Applications, start at login, launch now (macOS)
+	-pkill -x craft-pr-review; sleep 1
+	rm -rf "$(INSTALLED)" && cp -R "$(BUNDLE)" "$(INSTALLED)"
+	mkdir -p "$(HOME)/Library/LaunchAgents"
+	printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>' \
+	  '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' \
+	  '<plist version="1.0"><dict>' \
+	  '<key>Label</key><string>$(AGENT_ID)</string>' \
+	  '<key>ProgramArguments</key><array><string>/usr/bin/open</string><string>-a</string><string>$(INSTALLED)</string></array>' \
+	  '<key>RunAtLoad</key><true/>' \
+	  '</dict></plist>' > "$(AGENT)"
+	open "$(INSTALLED)"
+
+uninstall:      ## quit, remove the app and the login item (keeps config + cache)
+	-pkill -x craft-pr-review
+	rm -rf "$(INSTALLED)" "$(AGENT)"
+
+test: node_modules ## Rust + UI tests
+	cargo test --workspace
+	npm test
+
+check: node_modules ## lints
+	cargo clippy --workspace --all-targets -- -D warnings
+	cargo fmt --all -- --check
+	npm run --silent typecheck
+
+dump:           ## write what's cached to ui/dev-data.json, fetching nothing
+	cargo run -q -p pr-github --bin pr-fetch -- --dump ui/dev-data.json
+
+preview: dump ui ## open the UI in a browser against ui/dev-data.json
+	@echo "http://127.0.0.1:8767/index.html  (Ctrl+C to stop)"
+	python3 -m http.server 8767 --bind 127.0.0.1 --directory ui
+
+icons:          ## regenerate icons from the SVG sources
+	cd $(APP_DIR) && cargo tauri icon icons-src/app-icon.svg -o icons && rm -rf icons/android icons/ios
+	cd $(APP_DIR) && cargo tauri icon icons-src/tray.svg -o "$${TMPDIR:-/tmp}/craft-pr-tray" -p 64 && cp "$${TMPDIR:-/tmp}/craft-pr-tray/64x64.png" icons/tray.png
+
+clean:
+	cargo clean
+
+node_modules: package.json package-lock.json
+	npm ci
+	@touch node_modules
+
+ui: node_modules ## compile ui/src/*.ts to ui/build/ (build.rs does this for app builds)
+	npm run --silent build

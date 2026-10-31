@@ -1,0 +1,19 @@
+{
+  "name": "craft-pr-review-ui",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "watch": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test \"ui/src/**/*.test.ts\""
+  },
+  "devDependencies": {
+    "@types/node": "24.19.0",
+    "happy-dom": "20.14.5",
+    "typescript": "7.0.2"
+  }
+}

@@ -1,0 +1,11 @@
+// The browser code, without tests, compiled to ui/build/ (which index.html
+// loads). crates/craft-pr-review/build.rs runs this before every app build.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": [],
+    "noEmit": false,
+    "outDir": "ui/build"
+  },
+  "exclude": ["ui/src/**/*.test.ts"]
+}

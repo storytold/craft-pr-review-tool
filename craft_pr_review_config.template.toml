@@ -1,0 +1,73 @@
+# Craft PR Review — ~/.craft_pr_review_config.toml
+# Re-read before every poll; changes apply without a restart (window, tray and
+# shortcut changes apply on the next poll or relaunch).
+#
+# The repo list and GitHub token are NOT here: they come from Craft Status's
+# ~/.craft_status_config.toml, so both apps watch the same repos with the same
+# account. This file narrows that list down and tunes this app.
+
+# Repos in Craft Status's list owned by anyone else are third party (solidcraft).
+first_party_owners = ["storytold"]
+# First-party repos to leave out, as "owner/name".
+exclude_repos = []
+
+# How often each repo's open-PR list is brought up to date (minutes).
+poll_minutes = 30.0
+# How often the whole list is rewalked (hours). Only this picks up CI and
+# merge-conflict changes on PRs nobody touched: GitHub doesn't count those as updates.
+full_list_hours = 4.0
+# Data older than this is flagged STALE (minutes; never less than poll_minutes).
+stale_minutes = 90.0
+
+# GitHub's GraphQL budget is shared with Craft Status: same account, 5000 points
+# an hour. Inspecting PRs and walking merge history stop at this many points an
+# hour; keeping the lists current does not.
+max_points_per_hour = 2500
+# All fetching pauses below this many points left, well above the 150 where Craft
+# Status pauses itself, so this app always gives way first.
+budget_floor = 1000
+
+# Authors with more than this many PRs landed across the craft apps are "frequent".
+frequent_over = 30
+# Quality score (0-100) that counts as "high quality".
+high_quality = 75
+# Whether a contributors/people.toml entry makes someone core, as well as write
+# access. Contributors may add their own entry, so turn this off for a stricter list.
+people_toml_is_core = true
+# Paths that deserve a closer look when someone without write access changes them.
+sensitive_paths = [
+  ".github/workflows/", ".github/actions/", ".github/CODEOWNERS", "CODEOWNERS",
+  "build.rs", ".cargo/config", "deny.toml", ".coderabbit.yaml",
+  "sonar-project.properties", "Dockerfile", "tauri.conf.json", "/capabilities/",
+]
+
+[claude]
+# Claude runs through the Claude Code CLI, using its login. No tools, no MCP.
+enabled = true
+# Path to the claude binary; empty looks in the usual install locations.
+binary = ""
+model = "claude-opus-5-5"
+effort = "low"
+# PRs summarized per call.
+batch_size = 12
+# Hard limits on background calls. Asking for one PR by hand counts toward the
+# dollar limit too, but isn't refused by it.
+max_runs_per_hour = 12
+max_usd_per_day = 5.0
+# How often each repo's overlapping PRs are regrouped (hours).
+group_refresh_hours = 24.0
+
+[window]
+width = 1380.0
+height = 760.0
+always_on_top = false
+start_hidden = false
+opacity = 0.97
+
+[tray]
+hide_dock_icon = true            # macOS: menu-bar-only app (restart to apply)
+visible_on_all_workspaces = true # summon onto the current desktop/space
+close_to_tray = true
+
+[shortcuts]
+toggle_window = "CmdOrCtrl+Shift+Y"   # "" disables. Craft Status uses CmdOrCtrl+Shift+G.

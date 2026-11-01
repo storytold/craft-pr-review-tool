@@ -4,7 +4,7 @@ Craft PR Review
 A tray app for working through the open PRs on the craft apps. It polls GitHub,
 grades how close each PR is to landing, reads CodeRabbit's findings, and has
 Claude summarize PRs and group the ones possibly related. It runs locally, next to
-[Craft Status](../craft-repo-status-app), and shares its account, config and cache.
+[Craft Status](https://github.com/storytold/craft-repo-status-app), and shares its account, config and cache.
 
 ## Views
 

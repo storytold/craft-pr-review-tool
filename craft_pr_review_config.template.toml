@@ -4,7 +4,8 @@
 #
 # The repo list and GitHub token are NOT here: they come from Craft Status's
 # ~/.craft_status_config.toml, so both apps watch the same repos with the same
-# account. This file narrows that list down and tunes this app.
+# account. This file narrows that list down and tunes this app. The Type column
+# (app, library, assets, CI, tooling) comes from Craft Status's list of known repos.
 
 # Repos in Craft Status's list owned by anyone else are third party (solidcraft).
 first_party_owners = ["storytold"]

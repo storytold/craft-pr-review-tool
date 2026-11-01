@@ -100,6 +100,7 @@ tr.unlisted td:not(:first-child) { opacity: .55; }
 .app-icon { width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0; }
 .app-icon.none { display: inline-grid; place-items: center; font-size: 10px; font-weight: 700; color: var(--violet); background: color-mix(in srgb, var(--violet) 16%, transparent); }
 .muted { color: var(--muted); }
+.category { color: var(--muted); font-size: 11px; }
 .zero { color: var(--muted); opacity: .5; }
 .n-good { color: var(--good); font-weight: 600; }
 .n-bad { color: var(--bad); font-weight: 600; }

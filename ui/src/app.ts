@@ -272,6 +272,8 @@ export function start(api: Api, initial: Route = { view: 'apps' }): () => void {
       case 'name':
         return el('span', { class: 'repo', title: r.error ? `Last attempt failed: ${r.error}` : r.repo },
           el('span', { class: 'dot' }), appIcon(r.repo, r.icon), shortName(r.repo));
+      case 'category':
+        return v === null ? el('span', { class: 'muted' }, '—') : el('span', { class: 'category' }, String(v));
       case 'open':
         if (r.partial) return el('span', { class: 'muted', title: 'Still listing' }, `${num(r.open)} of ~${num(v as number)}`);
         return r.listed ? count(r.open) : el('span', { class: 'muted', title: 'From Craft Status; not listed here yet' }, v === null ? '—' : `~${num(v as number)}`);
@@ -327,7 +329,7 @@ export function start(api: Api, initial: Route = { view: 'apps' }): () => void {
     const foot = el('tr');
     REPO_COLUMNS.forEach((c, i) => {
       const startsGroup = c.group && REPO_COLUMNS[i - 1]?.group !== c.group;
-      const cell = c.key === 'name' ? 'All apps' : c.key in sums ? num(sums[c.key]) : '';
+      const cell = c.key === 'name' ? 'All repos' : c.key in sums ? num(sums[c.key]) : '';
       foot.append(el('td', { class: classes(c.text && 'left', startsGroup && 'group-start') }, cell));
     });
     main.replaceChildren(el('table', { id: 'apps-table' },

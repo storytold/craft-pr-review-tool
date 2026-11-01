@@ -6,8 +6,21 @@ export type Ease = 'easy' | 'medium' | 'hard';
 export type Tier = 'core' | 'frequent' | 'regular' | 'new' | 'bot';
 export type Severity = 'critical' | 'major' | 'minor' | 'trivial';
 
+export type RepoCategory = 'app' | 'library' | 'assets' | 'ci' | 'tooling' | 'other';
+
+/** The Type column's words; a repo that isn't in Craft Status's own list has none. */
+export const CATEGORY_LABEL: Readonly<Record<RepoCategory, string | null>> = {
+  app: 'App',
+  library: 'Library',
+  assets: 'Assets',
+  ci: 'CI',
+  tooling: 'Tooling',
+  other: null,
+};
+
 export interface RepoRow {
   repo: string;
+  category?: RepoCategory;
   icon?: string | null;
   open: number;
   open_hint?: number | null;
@@ -359,7 +372,8 @@ export interface Column<T> {
 const time = (iso: string | null | undefined): number | null => (iso ? Date.parse(iso) : null);
 
 export const REPO_COLUMNS: Column<RepoRow>[] = [
-  { key: 'name', label: 'App', text: true, value: (r) => shortName(r.repo) },
+  { key: 'name', label: 'Repo', text: true, value: (r) => shortName(r.repo) },
+  { key: 'category', label: 'Type', text: true, title: 'What the repo is: app, library, assets, CI or tooling', value: (r) => CATEGORY_LABEL[r.category ?? 'other'] },
   { key: 'open', label: 'Open', group: 'PRs', title: 'Open PRs', value: (r) => (r.listed ? (r.partial ? Math.max(r.open, r.open_hint ?? 0) : r.open) : r.open_hint ?? null) },
   { key: 'inspected', label: 'Inspected', group: 'PRs', title: 'How many have had CodeRabbit findings, files and checks read. Heuristics are partial until then.', value: (r) => (r.listed ? r.inspected : null) },
   { key: 'landable', label: 'Landable', group: 'Landing', title: 'A person approved the latest commit, CI passed, nothing in the way', value: (r) => (r.listed ? r.landable : null) },

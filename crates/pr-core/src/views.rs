@@ -4,6 +4,7 @@
 
 use std::collections::HashMap;
 
+use craft_core::{category_of, RepoCategory};
 use serde::{Deserialize, Serialize};
 
 use crate::assess::{assess, author_info, landed_counts, Assessment, AuthorInfo};
@@ -18,6 +19,8 @@ use crate::store::Store;
 #[serde(default)]
 pub struct RepoRow {
     pub repo: String,
+    /// What the repo is: app, library, assets, CI or tooling.
+    pub category: RepoCategory,
     pub icon: Option<String>,
     pub open: u64,
     /// Craft Status's open count, when this app hasn't listed the repo yet.
@@ -277,6 +280,7 @@ impl<'a> Ctx<'a> {
     fn repo_row(&self, d: &RepoData, sib: Option<&SiblingRepo>) -> RepoRow {
         let mut r = RepoRow {
             repo: d.repo.clone(),
+            category: category_of(&d.repo),
             icon: sib.and_then(|s| s.icon.clone()),
             open: d.prs.len() as u64,
             open_hint: sib.and_then(|s| s.open_prs),
@@ -352,6 +356,7 @@ pub fn overview(store: &Store, repos: &[String], cfg: &Config, sib: &Sibling) ->
                 let s = sib.repos.get(repo);
                 RepoRow {
                     repo: repo.clone(),
+                    category: category_of(repo),
                     icon: s.and_then(|s| s.icon.clone()),
                     open_hint: s.and_then(|s| s.open_prs),
                     ..Default::default()
@@ -523,6 +528,21 @@ mod tests {
         d.prs.insert(4, base(4, "new"));
         d.prs.insert(5, conflict);
         (s, vec!["o/r".to_string(), "o/unlisted".to_string()])
+    }
+
+    #[test]
+    fn overview_says_what_each_repo_is_listed_or_not() {
+        let (mut s, _) = store();
+        s.repo_mut("storytold/craft-fonts");
+        let repos = vec![
+            "storytold/craft-fonts".to_string(),
+            "storytold/craft-libs".to_string(),
+            "someone/else".to_string(),
+        ];
+        let rows = overview(&s, &repos, &Config::default(), &Sibling::default());
+        assert_eq!(rows[0].category, RepoCategory::Assets);
+        assert_eq!(rows[1].category, RepoCategory::Library);
+        assert_eq!(rows[2].category, RepoCategory::Other);
     }
 
     #[test]

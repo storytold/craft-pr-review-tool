@@ -14,6 +14,9 @@ quality, easy/medium/hard, needs work,
 conflicts, failing CI, CodeRabbit flags and nits, security flags and nits, PRs by
 core, frequent and new authors, interesting PRs, possibly related groups and ages.
 
+The root table covers every repo Craft Status watches, not only apps. Its **Type**
+column says which are apps, libraries, assets, CI or tooling.
+
 **An app** lists its PRs, best first, with sortable columns (including who approved
 each one and what it's possibly related to), filters, search and **Group possibly
 related**. Drafts are hidden unless asked for.

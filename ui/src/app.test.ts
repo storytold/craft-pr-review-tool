@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import { Window } from 'happy-dom';
 import { start } from './app.ts';
 import type { Api } from './app.ts';
+import { REPO_COLUMNS } from './model.ts';
 import type { Overview, PrFull, PrRow, RelatedRef, RepoRow, RepoView, Status } from './model.ts';
 
 const HTML = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
@@ -136,6 +137,19 @@ async function setup(overview?: Partial<Overview>): Promise<Harness> {
 const appRows = (h: Harness) => h.$$('#apps-table tbody tr').map((t) => t.dataset.repo);
 const prRows = (h: Harness) => h.$$('.pr-table tbody tr').map((t) => Number(t.dataset.number));
 
+test('the root table says what each repo is', async () => {
+  const h = await setup({ repos: [
+    row({ repo: 'o/fonts', category: 'assets', listed: true }),
+    row({ repo: 'o/new', category: 'ci', listed: false }),
+    row({ repo: 'o/mine', category: 'other', listed: true }),
+  ] });
+  const i = REPO_COLUMNS.findIndex((c) => c.key === 'category');
+  const type = (r: string) => (h.$(`tr[data-repo="${r}"]`) as HTMLTableRowElement).cells[i]!.textContent;
+  assert.equal(type('o/fonts'), 'Assets');
+  assert.equal(type('o/new'), 'CI');
+  assert.equal(type('o/mine'), '—');
+});
+
 test('the root lists each app, sortable, with totals', async () => {
   const h = await setup();
   assert.deepEqual(appRows(h), ['o/alpha', 'o/beta', 'o/gamma'], 'sorted by landable');
@@ -144,7 +158,7 @@ test('the root lists each app, sortable, with totals', async () => {
   (h.$('th[data-key="open"]') as HTMLElement).click();
   assert.deepEqual(appRows(h), ['o/alpha', 'o/beta', 'o/gamma']);
   assert.match(h.$('#apps-table tbody tr[data-repo="o/gamma"]')!.textContent!, /~77/, 'unlisted: Craft Status\'s count');
-  assert.match(h.$('tfoot')!.textContent!, /All apps/);
+  assert.match(h.$('tfoot')!.textContent!, /All repos/);
   assert.equal(h.$('#apps-count')!.textContent, '89');
   assert.equal(h.$('#queue-count')!.textContent, '8');
   assert.equal(h.$('#fresh-pill')!.textContent, 'FRESH');
